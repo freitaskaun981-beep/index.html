@@ -9,106 +9,136 @@
     *{box-sizing:border-box}
     html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;overflow:hidden;transition:background 0.5s}
     body{display:grid;place-items:center;background:#000;color:#e6eef6;position:relative}
-    body.red-background{background:red !important;}
-    .card{position:relative;z-index:1;width:360px;max-width:92vw;padding:28px;border-radius:16px;background:var(--card);box-shadow:0 8px 30px rgba(2,6,23,0.6);text-align:center}
+    .card{position:relative;z-index:1;width:360px;max-width:92vw;padding:28px;border-radius:16px;background:var(--card);box-shadow:0 8px 30px rgba(2,6,23,0.6);text-align:center;display:none}
+    .login-card{position:relative;z-index:1;width:360px;max-width:92vw;padding:28px;border-radius:16px;background:var(--card);box-shadow:0 8px 30px rgba(2,6,23,0.6);text-align:center;}
     h1{margin:0 0 8px;font-size:20px;letter-spacing:0.3px}
     .subtitle{color:var(--muted);font-size:13px;margin-bottom:18px}
+    input{width:80%;padding:8px;margin:6px 0;border-radius:6px;border:none;outline:none}
+    button{margin-top:12px;padding:8px 16px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer;transition:0.3s}
+    button:hover{opacity:0.8}
     .timer{display:flex;flex-direction:column;gap:10px}
     .unit{position:relative;width:100%;height:24px;background:rgba(255,255,255,0.1);border-radius:12px;overflow:hidden;margin-bottom:6px}
     .fill{height:100%;width:0%;background:var(--accent);border-radius:12px;transition:width 1s linear}
     .label{position:absolute;left:50%;top:50%;transform:translate(-50%, -50%);font-size:12px;color:#fff;font-weight:600}
     .motivational{margin-top:14px;font-size:13px;color:var(--accent);font-weight:600}
-    .restart-btn,.config-btn{margin-top:12px;padding:8px 16px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer;transition:0.3s}
-    .restart-btn:hover,.config-btn:hover{opacity:0.8}
     .drop{position:absolute;width:6px;height:12px;background:var(--accent);border-radius:50%;top:-20px;animation:fall linear infinite;z-index:2;}
     @keyframes fall{0%{transform:translateY(0) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(360deg);opacity:0}}
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>Contagem Rodrigo e Rafael</h1>
-    <div class="subtitle">Contagem iniciada: <strong id="startDisplay">28/10/2025 00:00:00</strong></div>
 
-    <div id="timer">
-      <div class="unit"><div id="days-fill" class="fill"></div><div class="label" id="days-label">0 dias</div></div>
-      <div class="unit"><div id="hours-fill" class="fill"></div><div class="label" id="hours-label">00 horas</div></div>
-      <div class="unit"><div id="minutes-fill" class="fill"></div><div class="label" id="minutes-label">00 min</div></div>
-      <div class="unit"><div id="seconds-fill" class="fill"></div><div class="label" id="seconds-label">00 seg</div></div>
-    </div>
+<div class="login-card">
+  <h1>Login</h1>
+  <input type="text" id="username" placeholder="Usuário" />
+  <input type="password" id="password" placeholder="Senha" />
+  <br>
+  <button id="loginBtn">Entrar</button>
+</div>
 
-    <div id="motivation" class="motivational">Mantenha o foco e siga firme!</div>
-    <button id="restartBtn" class="restart-btn">Reiniciar Contagem</button>
-    <button id="configBtn" class="config-btn">Configuração de Cor</button>
+<div class="card">
+  <h1>Contagem Rodrigo e Rafael</h1>
+  <div class="subtitle">Contagem iniciada: <strong id="startDisplay">28/10/2025 00:00:00</strong></div>
+
+  <div id="timer">
+    <div class="unit"><div id="days-fill" class="fill"></div><div class="label" id="days-label">0 dias</div></div>
+    <div class="unit"><div id="hours-fill" class="fill"></div><div class="label" id="hours-label">00 horas</div></div>
+    <div class="unit"><div id="minutes-fill" class="fill"></div><div class="label" id="minutes-label">00 min</div></div>
+    <div class="unit"><div id="seconds-fill" class="fill"></div><div class="label" id="seconds-label">00 seg</div></div>
   </div>
 
-  <script>
-    let start = new Date('2025-10-28T00:00:00-03:00');
-    const messages = [
-      'Mantenha o foco e siga firme!',
-      'Cada hora conta, você está avançando!',
-      'Resista à tentação, sua força aumenta!',
-      'Seja paciente, o progresso é contínuo!',
-      'Você é capaz de vencer qualquer desafio!',
-      'Persistência hoje é liberdade amanhã!',
-      'Cada segundo de controle é vitória!'
-    ];
+  <div id="motivation" class="motivational">Mantenha o foco e siga firme!</div>
+  <button id="restartBtn">Reiniciar Contagem</button>
+  <button id="configBtn">Configuração de Cor</button>
+</div>
 
-    function pad(n){return String(n).padStart(2,'0');}
+<script>
+  const loginCard = document.querySelector('.login-card');
+  const mainCard = document.querySelector('.card');
+  const loginBtn = document.getElementById('loginBtn');
+  const username = document.getElementById('username');
+  const password = document.getElementById('password');
 
-    function update(){
-      const now = new Date();
-      let diffMs = now - start;
-      const totalSec = Math.floor(diffMs/1000);
-      const secs = totalSec % 60;
-      const totalMin = Math.floor(totalSec/60);
-      const mins = totalMin % 60;
-      const totalHours = Math.floor(totalMin/60);
-      const hours = totalHours % 24;
-      const days = Math.floor(totalHours/24);
+  const users = [
+    {user:'Rafael', pass:'2008'},
+    {user:'Rodrigo', pass:'2009'}
+  ];
 
-      document.getElementById('days-label').textContent = days + ' dias';
-      document.getElementById('hours-label').textContent = pad(hours) + ' horas';
-      document.getElementById('minutes-label').textContent = pad(mins) + ' min';
-      document.getElementById('seconds-label').textContent = pad(secs) + ' seg';
-
-      document.getElementById('days-fill').style.width = Math.min((days % 30) / 30 * 100, 100) + '%';
-      document.getElementById('hours-fill').style.width = (hours / 24 * 100) + '%';
-      document.getElementById('minutes-fill').style.width = (mins / 60 * 100) + '%';
-      document.getElementById('seconds-fill').style.width = (secs / 60 * 100) + '%';
-
-      const msgIndex = totalHours % messages.length;
-      document.getElementById('motivation').textContent = messages[msgIndex];
+  loginBtn.addEventListener('click', ()=>{
+    const found = users.find(u => u.user === username.value && u.pass === password.value);
+    if(found){
+      loginCard.style.display = 'none';
+      mainCard.style.display = 'block';
+    } else {
+      alert('Usuário ou senha incorretos!');
     }
+  });
 
-    update();
-    setInterval(update,1000);
+  let start = new Date('2025-10-28T00:00:00-03:00');
+  const messages = [
+    'Mantenha o foco e siga firme!',
+    'Cada hora conta, você está avançando!',
+    'Resista à tentação, sua força aumenta!',
+    'Seja paciente, o progresso é contínuo!',
+    'Você é capaz de vencer qualquer desafio!',
+    'Persistência hoje é liberdade amanhã!',
+    'Cada segundo de controle é vitória!'
+  ];
 
-    function createDrop(){
-      const drop = document.createElement('div');
-      drop.className = 'drop';
-      drop.style.left = Math.random() * 100 + 'vw';
-      drop.style.animationDuration = (2 + Math.random() * 3) + 's';
-      document.body.appendChild(drop);
-      setTimeout(()=>drop.remove(),5000);
+  function pad(n){return String(n).padStart(2,'0');}
+
+  function update(){
+    const now = new Date();
+    let diffMs = now - start;
+    const totalSec = Math.floor(diffMs/1000);
+    const secs = totalSec % 60;
+    const totalMin = Math.floor(totalSec/60);
+    const mins = totalMin % 60;
+    const totalHours = Math.floor(totalMin/60);
+    const hours = totalHours % 24;
+    const days = Math.floor(totalHours/24);
+
+    document.getElementById('days-label').textContent = days + ' dias';
+    document.getElementById('hours-label').textContent = pad(hours) + ' horas';
+    document.getElementById('minutes-label').textContent = pad(mins) + ' min';
+    document.getElementById('seconds-label').textContent = pad(secs) + ' seg';
+
+    document.getElementById('days-fill').style.width = Math.min((days % 30) / 30 * 100, 100) + '%';
+    document.getElementById('hours-fill').style.width = (hours / 24 * 100) + '%';
+    document.getElementById('minutes-fill').style.width = (mins / 60 * 100) + '%';
+    document.getElementById('seconds-fill').style.width = (secs / 60 * 100) + '%';
+
+    const msgIndex = totalHours % messages.length;
+    document.getElementById('motivation').textContent = messages[msgIndex];
+  }
+
+  setInterval(update,1000);
+
+  function createDrop(){
+    const drop = document.createElement('div');
+    drop.className = 'drop';
+    drop.style.left = Math.random() * 100 + 'vw';
+    drop.style.animationDuration = (2 + Math.random() * 3) + 's';
+    document.body.appendChild(drop);
+    setTimeout(()=>drop.remove(),5000);
+  }
+  setInterval(createDrop,200);
+
+  document.getElementById('restartBtn').addEventListener('click', ()=>{
+    start = new Date();
+    document.getElementById('startDisplay').textContent = start.toLocaleString();
+  });
+
+  document.getElementById('configBtn').addEventListener('click', ()=>{
+    const color = prompt('Escolha a cor: Laranja, Verde, Amarelo, Azul').toLowerCase();
+    switch(color){
+      case 'laranja': document.documentElement.style.setProperty('--accent','#FFA500'); break;
+      case 'verde': document.documentElement.style.setProperty('--accent','#00FF00'); break;
+      case 'amarelo': document.documentElement.style.setProperty('--accent','#FFFF00'); break;
+      case 'azul': document.documentElement.style.setProperty('--accent','#1E90FF'); break;
+      default: alert('Cor inválida!');
     }
-    setInterval(createDrop,200);
+  });
+</script>
 
-    document.getElementById('restartBtn').addEventListener('click', ()=>{
-      start = new Date();
-      document.body.classList.add('red-background');
-      document.getElementById('startDisplay').textContent = start.toLocaleString();
-    });
-
-    document.getElementById('configBtn').addEventListener('click', ()=>{
-      const color = prompt('Escolha a cor: Laranja, Verde, Amarelo, Azul').toLowerCase();
-      switch(color){
-        case 'laranja': document.documentElement.style.setProperty('--accent','#FFA500'); break;
-        case 'verde': document.documentElement.style.setProperty('--accent','#00FF00'); break;
-        case 'amarelo': document.documentElement.style.setProperty('--accent','#FFFF00'); break;
-        case 'azul': document.documentElement.style.setProperty('--accent','#1E90FF'); break;
-        default: alert('Cor inválida!');
-      }
-    });
-  </script>
 </body>
 </html>
