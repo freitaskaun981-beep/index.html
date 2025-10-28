@@ -3,48 +3,47 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Relógio — I'Am Sober (início 28/10/2025 00:00)</title>
+  <title>Relógio — I'Am Sober</title>
   <style>
     :root{--bg:#0b1020;--card:rgba(15,23,36,0.8);--accent:#64d2ff;--muted:#9aa6b2}
     *{box-sizing:border-box}
-    html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial}
-    body{display:grid;place-items:center;background:url('https://i.pinimg.com/originals/1j/TM/my/1jTMmylRL.jpg') center/cover no-repeat;color:#e6eef6}
+    html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;overflow:hidden;transition:background 0.5s}
+    body{display:grid;place-items:center;background:url('https://i.pinimg.com/originals/1j/TM/my/1jTMmylRL.jpg') center/cover no-repeat;color:#e6eef6;position:relative}
+    body.red-background{background:red !important;}
     body::before{content:"";position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:0;}
     .card{position:relative;z-index:1;width:360px;max-width:92vw;padding:28px;border-radius:16px;background:var(--card);box-shadow:0 8px 30px rgba(2,6,23,0.6);text-align:center}
     h1{margin:0 0 8px;font-size:20px;letter-spacing:0.3px}
     .subtitle{color:var(--muted);font-size:13px;margin-bottom:18px}
-    .timer{display:flex;justify-content:space-between;gap:10px}
-    .unit{flex:1;background:rgba(255,255,255,0.02);padding:14px;border-radius:10px}
-    .number{font-size:28px;font-weight:700}
-    .label{font-size:11px;color:var(--muted);margin-top:6px}
-    .meta{margin-top:14px;font-size:12px;color:var(--muted)}
-    .small{font-size:11px;color:#9fb7c8;margin-top:10px}
-    .motivational{margin-top:14px;font-size:13px;color:#64d2ff;font-weight:600}
-    footer{margin-top:14px;font-size:11px;color:var(--muted)}
-    .dot{height:10px;width:10px;background:var(--accent);border-radius:50%;display:inline-block;margin-left:8px;vertical-align:middle}
+    .timer{display:flex;flex-direction:column;gap:10px}
+    .unit{position:relative;width:100%;height:24px;background:rgba(255,255,255,0.1);border-radius:12px;overflow:hidden;margin-bottom:6px}
+    .fill{height:100%;width:0%;background:var(--accent);border-radius:12px;transition:width 1s linear}
+    .label{position:absolute;left:50%;top:50%;transform:translate(-50%, -50%);font-size:12px;color:#fff;font-weight:600}
+    .motivational{margin-top:14px;font-size:13px;color:var(--accent);font-weight:600}
+    .restart-btn,.config-btn{margin-top:12px;padding:8px 16px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer;transition:0.3s}
+    .restart-btn:hover,.config-btn:hover{opacity:0.8}
+    .drop{position:absolute;width:6px;height:12px;background:var(--accent);border-radius:50%;top:-20px;animation:fall linear infinite;z-index:2;}
+    @keyframes fall{0%{transform:translateY(0) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(360deg);opacity:0}}
   </style>
 </head>
 <body>
   <div class="card">
     <h1>Contagem Rodrigo e Rafael</h1>
-    <div class="subtitle">Contagem iniciada: <strong>28/10/2025 00:00:00 (horário de São Paulo)</strong></div>
+    <div class="subtitle">Contagem iniciada: <strong id="startDisplay">28/10/2025 00:00:00</strong></div>
 
-    <div id="timer" class="timer">
-      <div class="unit"><div id="days" class="number">0</div><div class="label">dias</div></div>
-      <div class="unit"><div id="hours" class="number">00</div><div class="label">horas</div></div>
-      <div class="unit"><div id="minutes" class="number">00</div><div class="label">min</div></div>
-      <div class="unit"><div id="seconds" class="number">00</div><div class="label">seg</div></div>
+    <div id="timer">
+      <div class="unit"><div id="days-fill" class="fill"></div><div class="label" id="days-label">0 dias</div></div>
+      <div class="unit"><div id="hours-fill" class="fill"></div><div class="label" id="hours-label">00 horas</div></div>
+      <div class="unit"><div id="minutes-fill" class="fill"></div><div class="label" id="minutes-label">00 min</div></div>
+      <div class="unit"><div id="seconds-fill" class="fill"></div><div class="label" id="seconds-label">00 seg</div></div>
     </div>
 
     <div id="motivation" class="motivational">Mantenha o foco e siga firme!</div>
-
-    <div class="meta">Iniciado — <span id="startIso">2025-10-28T00:00:00-03:00</span> <span class="dot" title="horário de referência"></span></div>
-    <div class="small">O relógio atualiza automaticamente a cada segundo. Salve este arquivo como <code>index.html</code> e abra no navegador.</div>
-    <footer>Feito para marcar o tempo — sem enrolação.</footer>
+    <button id="restartBtn" class="restart-btn">Reiniciar Contagem</button>
+    <button id="configBtn" class="config-btn">Configuração de Cor</button>
   </div>
 
   <script>
-    const start = new Date('2025-10-28T00:00:00-03:00');
+    let start = new Date('2025-10-28T00:00:00-03:00');
     const messages = [
       'Mantenha o foco e siga firme!',
       'Cada hora conta, você está avançando!',
@@ -52,17 +51,14 @@
       'Seja paciente, o progresso é contínuo!',
       'Você é capaz de vencer qualquer desafio!',
       'Persistência hoje é liberdade amanhã!',
-      'Cada segundo de controle é vitória!' 
+      'Cada segundo de controle é vitória!'
     ];
 
-    function pad(n){return String(n).padStart(2,'0')}
+    function pad(n){return String(n).padStart(2,'0');}
 
     function update(){
       const now = new Date();
       let diffMs = now - start;
-      const negative = diffMs < 0;
-      if(negative) diffMs = Math.abs(diffMs);
-
       const totalSec = Math.floor(diffMs/1000);
       const secs = totalSec % 60;
       const totalMin = Math.floor(totalSec/60);
@@ -71,18 +67,49 @@
       const hours = totalHours % 24;
       const days = Math.floor(totalHours/24);
 
-      document.getElementById('days').textContent = (negative?'-':'') + days;
-      document.getElementById('hours').textContent = pad(hours);
-      document.getElementById('minutes').textContent = pad(mins);
-      document.getElementById('seconds').textContent = pad(secs);
+      document.getElementById('days-label').textContent = days + ' dias';
+      document.getElementById('hours-label').textContent = pad(hours) + ' horas';
+      document.getElementById('minutes-label').textContent = pad(mins) + ' min';
+      document.getElementById('seconds-label').textContent = pad(secs) + ' seg';
 
-      // Atualiza a frase motivacional a cada hora
+      document.getElementById('days-fill').style.width = Math.min((days % 30) / 30 * 100, 100) + '%';
+      document.getElementById('hours-fill').style.width = (hours / 24 * 100) + '%';
+      document.getElementById('minutes-fill').style.width = (mins / 60 * 100) + '%';
+      document.getElementById('seconds-fill').style.width = (secs / 60 * 100) + '%';
+
       const msgIndex = totalHours % messages.length;
       document.getElementById('motivation').textContent = messages[msgIndex];
     }
 
     update();
     setInterval(update,1000);
+
+    function createDrop(){
+      const drop = document.createElement('div');
+      drop.className = 'drop';
+      drop.style.left = Math.random() * 100 + 'vw';
+      drop.style.animationDuration = (2 + Math.random() * 3) + 's';
+      document.body.appendChild(drop);
+      setTimeout(()=>drop.remove(),5000);
+    }
+    setInterval(createDrop,200);
+
+    document.getElementById('restartBtn').addEventListener('click', ()=>{
+      start = new Date();
+      document.body.classList.add('red-background');
+      document.getElementById('startDisplay').textContent = start.toLocaleString();
+    });
+
+    document.getElementById('configBtn').addEventListener('click', ()=>{
+      const color = prompt('Escolha a cor: Laranja, Verde, Amarelo, Azul').toLowerCase();
+      switch(color){
+        case 'laranja': document.documentElement.style.setProperty('--accent','#FFA500'); break;
+        case 'verde': document.documentElement.style.setProperty('--accent','#00FF00'); break;
+        case 'amarelo': document.documentElement.style.setProperty('--accent','#FFFF00'); break;
+        case 'azul': document.documentElement.style.setProperty('--accent','#1E90FF'); break;
+        default: alert('Cor inválida!');
+      }
+    });
   </script>
 </body>
 </html>
