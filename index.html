@@ -5,11 +5,12 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Relógio — I'Am Sober (início 28/10/2025 00:00)</title>
   <style>
-    :root{--bg:#0b1020;--card:#0f1724;--accent:#64d2ff;--muted:#9aa6b2}
+    :root{--bg:#0b1020;--card:rgba(15,23,36,0.8);--accent:#64d2ff;--muted:#9aa6b2}
     *{box-sizing:border-box}
     html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial}
-    body{display:grid;place-items:center;background:linear-gradient(180deg,#041027 0%,#071225 100%);color:#e6eef6}
-    .card{width:360px;max-width:92vw;padding:28px;border-radius:16px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));box-shadow:0 8px 30px rgba(2,6,23,0.6);text-align:center}
+    body{display:grid;place-items:center;background:url('https://i.pinimg.com/originals/1j/TM/my/1jTMmylRL.jpg') center/cover no-repeat;color:#e6eef6}
+    body::before{content:"";position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:0;}
+    .card{position:relative;z-index:1;width:360px;max-width:92vw;padding:28px;border-radius:16px;background:var(--card);box-shadow:0 8px 30px rgba(2,6,23,0.6);text-align:center}
     h1{margin:0 0 8px;font-size:20px;letter-spacing:0.3px}
     .subtitle{color:var(--muted);font-size:13px;margin-bottom:18px}
     .timer{display:flex;justify-content:space-between;gap:10px}
@@ -18,13 +19,14 @@
     .label{font-size:11px;color:var(--muted);margin-top:6px}
     .meta{margin-top:14px;font-size:12px;color:var(--muted)}
     .small{font-size:11px;color:#9fb7c8;margin-top:10px}
+    .motivational{margin-top:14px;font-size:13px;color:#64d2ff;font-weight:600}
     footer{margin-top:14px;font-size:11px;color:var(--muted)}
     .dot{height:10px;width:10px;background:var(--accent);border-radius:50%;display:inline-block;margin-left:8px;vertical-align:middle}
   </style>
 </head>
 <body>
   <div class="card">
-    <h1>I'Am Sober — Relógio</h1>
+    <h1>Contagem Rodrigo e Rafael</h1>
     <div class="subtitle">Contagem iniciada: <strong>28/10/2025 00:00:00 (horário de São Paulo)</strong></div>
 
     <div id="timer" class="timer">
@@ -34,22 +36,30 @@
       <div class="unit"><div id="seconds" class="number">00</div><div class="label">seg</div></div>
     </div>
 
+    <div id="motivation" class="motivational">Mantenha o foco e siga firme!</div>
+
     <div class="meta">Iniciado — <span id="startIso">2025-10-28T00:00:00-03:00</span> <span class="dot" title="horário de referência"></span></div>
-    <div class="small">O relógio atualiza automaticamente a cada segundo. Salve este arquivo como <code>relogio_sober.html</code> e abra no navegador.</div>
+    <div class="small">O relógio atualiza automaticamente a cada segundo. Salve este arquivo como <code>index.html</code> e abra no navegador.</div>
     <footer>Feito para marcar o tempo — sem enrolação.</footer>
   </div>
 
   <script>
-    // Base: início 28 out 2025 00:00:00 -03:00 (São Paulo)
     const start = new Date('2025-10-28T00:00:00-03:00');
+    const messages = [
+      'Mantenha o foco e siga firme!',
+      'Cada hora conta, você está avançando!',
+      'Resista à tentação, sua força aumenta!',
+      'Seja paciente, o progresso é contínuo!',
+      'Você é capaz de vencer qualquer desafio!',
+      'Persistência hoje é liberdade amanhã!',
+      'Cada segundo de controle é vitória!' 
+    ];
 
     function pad(n){return String(n).padStart(2,'0')}
 
     function update(){
       const now = new Date();
-      let diffMs = now - start; // ms desde o início
-
-      // Se for negativo (antes do início) mostra contagem regressiva negativa com sinal -
+      let diffMs = now - start;
       const negative = diffMs < 0;
       if(negative) diffMs = Math.abs(diffMs);
 
@@ -65,9 +75,12 @@
       document.getElementById('hours').textContent = pad(hours);
       document.getElementById('minutes').textContent = pad(mins);
       document.getElementById('seconds').textContent = pad(secs);
+
+      // Atualiza a frase motivacional a cada hora
+      const msgIndex = totalHours % messages.length;
+      document.getElementById('motivation').textContent = messages[msgIndex];
     }
 
-    // Atualiza imediatamente e depois a cada segundo
     update();
     setInterval(update,1000);
   </script>
